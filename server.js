@@ -37,6 +37,3 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
-
-
-// mongodb+srv://harshit:96969389@cluster0.keggyq2.mongodb.net/
