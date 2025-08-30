@@ -121,6 +121,3 @@ app.all('*', (req, res, next) => {
 app.use(globalErrorHandler);
 
 module.exports = app;
-
-// 9DLV8EUX1GER954VXAJGTSPZ Sendgrid
-// pk_test_51RxqfeGaIsZJR66x02duAlFEAWBi9KFOGrxfghah6rbjMx3sReHlBIGJtlzZKsbErhCSjJFjumykRS1YrkU6qJRK00pu1FavHj
