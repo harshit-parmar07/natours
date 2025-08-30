@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const serverless = require('serverless-http');
 
 // Handle uncaught exceptions globally
 process.on('uncaughtException', (err) => {
@@ -28,8 +29,7 @@ mongoose
   })
   .then(() => console.log('DB connection successful'));
 
-module.exports = app;
-
+module.exports = serverless(app);
 // Handle unhandled promise rejections gracefully
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
