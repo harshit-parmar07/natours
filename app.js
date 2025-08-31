@@ -10,6 +10,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
@@ -21,10 +22,15 @@ const viewRouter = require('./routes/viewRoutes');
 // Start Express app
 const app = express();
 
+app.enable('trust proxy');
+
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // 1)GLOBAL MIDDLEWARES
+app.use(cors());
+
+app.options('*', cors());
 
 // serving static files
 app.use(express.static(path.join(__dirname, 'public')));
