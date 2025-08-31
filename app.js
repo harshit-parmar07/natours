@@ -103,6 +103,12 @@ app.use((req, res, next) => {
 });
 
 // 3) ROUTES
+app.use((req, res, next) => {
+  if (req.method === 'HEAD') {
+    return res.status(200).end();
+  }
+  next();
+});
 
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
