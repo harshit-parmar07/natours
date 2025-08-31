@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const serverless = require('serverless-http');
 
 // Handle uncaught exceptions globally
 process.on('uncaughtException', (err) => {
@@ -13,7 +12,7 @@ process.on('uncaughtException', (err) => {
 dotenv.config({ path: './config.env' });
 
 // Import your Express app
-const app = require('../app'); // Adjust path since this will be in /api/index.js
+const app = require('./app');
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
@@ -29,10 +28,17 @@ mongoose
   })
   .then(() => console.log('DB connection successful'));
 
-module.exports = serverless(app);
+// Start the server listening on the environment port or 3000
+const port = process.env.PORT || 3000;
+const server = app.listen(port, () => {
+  console.log(`App running on port ${port}...`);
+});
+
 // Handle unhandled promise rejections gracefully
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
   console.log('UNHANDLED REJECTION Shutting down....');
-  process.exit(1);
+  server.close(() => {
+    process.exit(1);
+  });
 });
