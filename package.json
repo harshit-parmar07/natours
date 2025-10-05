@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "natours",
   "version": "1.0.0",
   "description": "Learning node, express and mongoDB",
