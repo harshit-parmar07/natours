@@ -1,5 +1,16 @@
 {
   "extends": ["airbnb", "prettier", "plugin:node/recommended"],
+  
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  }
+,
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": "error",

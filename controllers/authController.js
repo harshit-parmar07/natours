@@ -1,3 +1,4 @@
+/* eslint-disable import/no-useless-path-segments */
 /* eslint-disable arrow-body-style */
 const crypto = require('crypto');
 const { promisify } = require('util');
@@ -80,6 +81,11 @@ exports.logout = (req, res) => {
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
   let token;
+  // console.log('💥💥  ', req);
+  // console.log('💥💥User: ', req);
+  // console.log('💥💥cookie header:', req.headers.cookie);
+  // console.log('💥💥cookies:', req.cookies);
+  // console.log('tourId:', tourId);
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')

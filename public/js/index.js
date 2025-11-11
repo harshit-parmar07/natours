@@ -24,6 +24,10 @@ if (loginForm)
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    // console.log('💥'+email);
+    // console.log('💥'+password);
+    // console.log(💥password);
+
     login(email, password);
   });
 
@@ -70,6 +74,9 @@ if (bookBtn)
   bookBtn.addEventListener('click', (e) => {
     e.currentTarget.textContent = 'Processing...';
     const { tourId } = e.currentTarget.dataset;
-    // console.log('tourId:', tourId); // temporary debug
+    // console.log('💥💥User: ', req);
+    // console.log('💥💥cookie header:', req.headers.cookie);
+    // console.log('💥💥cookies:', req);
+    // console.log('tourId:', tourId);
     bookTour(tourId);
   });
