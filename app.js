@@ -17,6 +17,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const viewRouter = require('./routes/viewRoutes');
 
 // Start Express app
@@ -82,6 +83,12 @@ const limiter = rateLimit({
   message: 'Too mamy request from this IP, try again in an hour'
 });
 app.use('/api', limiter);
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 // BODY PARSER, READING DATA FROM BODY TO REQ.BODY
 app.use(express.json({ limit: '10kb' }));
