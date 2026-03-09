@@ -20,13 +20,24 @@ const Tour = () => {
   const { user } = useContext(AuthContext);
   const [tour, setTour] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
     const fetchTour = async () => {
       try {
-        const res = await api.get(`/tours?slug=${slug}`);
-        // Based on the endpoint /tours?slug=xxx, it returns an array of tours, we need the first one
-        setTour(res.data.data.data[0]);
+        // Step 1: Get the tour ID via the slug query
+        const slugRes = await api.get(`/tours?slug=${slug}`);
+        const tourBasic = slugRes.data.data.data[0];
+
+        if (!tourBasic) {
+          setTour(null);
+          setLoading(false);
+          return;
+        }
+
+        // Step 2: Fetch the full tour by ID (this uses getOne which populates reviews)
+        const fullRes = await api.get(`/tours/${tourBasic._id}`);
+        setTour(fullRes.data.data.data);
       } catch (err) {
         console.error('Error fetching tour:', err);
       } finally {
@@ -35,6 +46,20 @@ const Tour = () => {
     };
     fetchTour();
   }, [slug]);
+
+  const handleBookTour = async (tourId) => {
+    try {
+      setBookingLoading(true);
+      const res = await api.get(`/bookings/checkout-session/${tourId}`);
+      // Redirect to Stripe checkout
+      window.location.assign(res.data.session.url);
+    } catch (err) {
+      console.error('Error booking tour:', err);
+      alert(err.response?.data?.message || 'Error creating checkout session');
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   if (loading) return <main className="main"><div className="loader">Loading...</div></main>;
   if (!tour) return <main className="main"><div className="error">Tour not found</div></main>;
@@ -150,8 +175,13 @@ const Tour = () => {
               {tour.duration} days. 1 adventure. Infinite memories. Make it yours today!
             </p>
             {user ? (
-              <button className="btn btn--green span-all-rows" id="book-tour" data-tour-id={tour.id || tour._id}>
-                Book tour now!
+              <button
+                className="btn btn--green span-all-rows"
+                id="book-tour"
+                disabled={bookingLoading}
+                onClick={() => handleBookTour(tour.id || tour._id)}
+              >
+                {bookingLoading ? 'Processing...' : 'Book tour now!'}
               </button>
             ) : (
               <Link to="/login" className="btn btn--green span-all-rows">
@@ -166,3 +196,4 @@ const Tour = () => {
 };
 
 export default Tour;
+
