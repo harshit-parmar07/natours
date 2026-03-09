@@ -10,6 +10,8 @@ router.get('/my-tours', bookingController.getMyTours);
 
 router.get('/checkout-session/:tourId', bookingController.getCheckoutSession);
 
+router.get('/create-booking-checkout', bookingController.createBookingFromCheckout);
+
 router.use(authController.restrictTo('admin', 'lead-guide'));
 
 router

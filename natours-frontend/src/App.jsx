@@ -7,6 +7,7 @@ import Tour from './pages/Tour';
 import Login from './pages/Login';
 import Account from './pages/Account';
 import MyTours from './pages/MyTours';
+import Signup from './pages/Signup';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route index element={<Overview />} />
             <Route path="tour/:slug" element={<Tour />} />
             <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
             <Route path="me" element={<Account />} />
             <Route path="my-tours" element={<MyTours />} />
           </Route>

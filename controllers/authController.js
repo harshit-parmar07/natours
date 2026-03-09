@@ -45,9 +45,14 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm
   });
 
-  const url = `${req.protocol}://${req.get('host')}/me`;
-  // console.log(url);
-  await new Email(newUser, url).sendWelcome();
+  // Send welcome email, but don't block signup if it fails
+  try {
+    const frontendBase = process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`;
+    const url = `${frontendBase}/me`;
+    await new Email(newUser, url).sendWelcome();
+  } catch (err) {
+    console.log('Welcome email could not be sent:', err.message);
+  }
 
   createSendToken(newUser, 201, req, res);
 });

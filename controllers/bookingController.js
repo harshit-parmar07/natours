@@ -11,12 +11,12 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.tourId);
 
   // 2) Create checkout session
+  const frontendBase = process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`;
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    // success_url: `${req.protocol}://${req.get('host')}/my-tours/?tour=${req.params.tourId}&user=${req.user.id}&price=${tour.price}`,
 
-    success_url: `${req.protocol}://${req.get('host')}/my-tours/`,
-    cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
+    success_url: `${frontendBase}/my-tours/?tour=${req.params.tourId}&user=${req.user.id}&price=${tour.price}`,
+    cancel_url: `${frontendBase}/tour/${tour.slug}`,
     customer_email: req.user.email,
     client_reference_id: req.params.tourId,
     mode: 'payment',
@@ -81,12 +81,41 @@ exports.webhookCheckout = (req, res, next) => {
   res.status(200).json({ received: true });
 };
 
+exports.createBookingFromCheckout = catchAsync(async (req, res, next) => {
+  const { tour, user, price } = req.query;
+
+  if (!tour || !user || !price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Missing tour, user, or price query parameter'
+    });
+  }
+
+  // Check if this booking already exists to prevent duplicates
+  const existingBooking = await Booking.findOne({ tour, user });
+  if (existingBooking) {
+    return res.status(200).json({
+      status: 'success',
+      message: 'Booking already exists',
+      data: { booking: existingBooking }
+    });
+  }
+
+  const booking = await Booking.create({ tour, user, price });
+
+  res.status(201).json({
+    status: 'success',
+    data: { booking }
+  });
+});
+
 exports.getMyTours = catchAsync(async (req, res, next) => {
   // 1) Find all bookings for current user
   const bookings = await Booking.find({ user: req.user.id });
 
   // 2) Find tours with the returned IDs
-  const tourIDs = bookings.map(el => el.tour);
+  // Note: Booking model auto-populates 'tour' so el.tour is an object, not an ID
+  const tourIDs = bookings.map(el => el.tour.id || el.tour._id || el.tour);
   const tours = await Tour.find({ _id: { $in: tourIDs } });
 
   res.status(200).json({
