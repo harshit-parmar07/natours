@@ -2,13 +2,14 @@ import { useEffect, useState, useContext } from 'react';
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import { AlertContext } from '../context/AlertContext';
 import TourCard from '../components/TourCard';
 
 const MyTours = () => {
   const { user, loading: authLoading } = useContext(AuthContext);
+  const { showAlert } = useContext(AlertContext);
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ const MyTours = () => {
         const res = await api.get('/bookings/my-tours');
         setTours(res.data.data.tours);
       } catch (err) {
-        setError(err.response?.data?.message || 'Error fetching your bookings');
+        showAlert('error', err.response?.data?.message || 'Error fetching your bookings');
       } finally {
         setLoading(false);
       }
@@ -50,10 +51,6 @@ const MyTours = () => {
 
   if (!user) {
     return <Navigate to="/login" replace />;
-  }
-
-  if (error) {
-    return <main className="main"><div className="error__msg" style={{textAlign: 'center', fontSize: '1.4rem'}}>{error}</div></main>;
   }
 
   return (

@@ -18,15 +18,11 @@ const globalErrorHandler = require('./controllers/errorController');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const bookingController = require('./controllers/bookingController');
-const viewRouter = require('./routes/viewRoutes');
 
 // Start Express app
 const app = express();
 
 app.set('trust proxy', 1);
-
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
 
 // 1)GLOBAL MIDDLEWARES
 app.use(cors());
@@ -142,7 +138,6 @@ app.use(compression());
 //   res.type('application/json').send('{}');
 // });
 
-app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

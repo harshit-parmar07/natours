@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { AlertContext } from '../context/AlertContext';
 import api from '../utils/api';
 
 const NavItem = ({ link, text, icon, active }) => (
@@ -16,6 +17,7 @@ const NavItem = ({ link, text, icon, active }) => (
 
 const Account = () => {
   const { user, setUser, loading } = useContext(AuthContext);
+  const { showAlert } = useContext(AlertContext);
   
   // Data state
   const [name, setName] = useState('');
@@ -30,7 +32,6 @@ const Account = () => {
   // Status hooks
   const [updatingData, setUpdatingData] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
-  const [message, setMessage] = useState('');
 
   // Initialize state when user is defined
   useEffect(() => {
@@ -46,7 +47,6 @@ const Account = () => {
   const handleUserDataUpdate = async (e) => {
     e.preventDefault();
     setUpdatingData(true);
-    setMessage('');
     
     try {
       const form = new FormData();
@@ -56,9 +56,9 @@ const Account = () => {
 
       const res = await api.patch('/users/updateMe', form);
       setUser(res.data.data.user);
-      setMessage('Data updated successfully!');
+      showAlert('success', 'Data updated successfully!');
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Error updating data');
+      showAlert('error', err.response?.data?.message || 'Error updating data');
     } finally {
       setUpdatingData(false);
     }
@@ -67,7 +67,6 @@ const Account = () => {
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
     setUpdatingPassword(true);
-    setMessage('');
 
     try {
       await api.patch('/users/updateMyPassword', {
@@ -76,12 +75,12 @@ const Account = () => {
         passwordConfirm
       });
       
-      setMessage('Password updated successfully!');
+      showAlert('success', 'Password updated successfully!');
       setPasswordCurrent('');
       setPassword('');
       setPasswordConfirm('');
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Error updating password');
+      showAlert('error', err.response?.data?.message || 'Error updating password');
     } finally {
       setUpdatingPassword(false);
     }
@@ -114,8 +113,6 @@ const Account = () => {
         <div className="user-view__content">
           <div className="user-view__form-container">
             <h2 className="heading-secondary ma-bt-md">Your account settings</h2>
-            
-            {message && <div style={{textAlign:'center', fontSize: '1.4rem', color: '#ff7730', marginBottom:'1.5rem'}}>{message}</div>}
 
             <form className="form form-user-data" onSubmit={handleUserDataUpdate}>
               <div className="form__group">

@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import { AlertContext } from '../context/AlertContext';
 import ReviewCard from '../components/ReviewCard';
 import MapBox from '../components/MapBox';
 
@@ -18,6 +19,7 @@ const OverviewBox = ({ label, text, icon }) => (
 const Tour = () => {
   const { slug } = useParams();
   const { user } = useContext(AuthContext);
+  const { showAlert } = useContext(AlertContext);
   const [tour, setTour] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bookingLoading, setBookingLoading] = useState(false);
@@ -55,7 +57,7 @@ const Tour = () => {
       window.location.assign(res.data.session.url);
     } catch (err) {
       console.error('Error booking tour:', err);
-      alert(err.response?.data?.message || 'Error creating checkout session');
+      showAlert('error', err.response?.data?.message || 'Error creating checkout session');
     } finally {
       setBookingLoading(false);
     }

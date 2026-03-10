@@ -2,21 +2,21 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import { AlertContext } from '../context/AlertContext';
 
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const { showAlert } = useContext(AlertContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const res = await api.post('/users/signup', {
@@ -28,11 +28,12 @@ const Signup = () => {
 
       // Update global auth state with the new user
       login(res.data.data.user);
+      showAlert('success', 'Account created successfully!');
 
       // Redirect to home
-      navigate('/');
+      setTimeout(() => navigate('/'), 500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error signing up');
+      showAlert('error', err.response?.data?.message || 'Error signing up');
     } finally {
       setLoading(false);
     }
@@ -43,11 +44,6 @@ const Signup = () => {
       <div className="login-form">
         <h2 className="heading-secondary ma-bt-lg">Create your account</h2>
         <form className="form form--signup" onSubmit={handleSubmit}>
-          {error && (
-            <div style={{ color: '#ff7730', marginBottom: '1rem', textAlign: 'center', fontSize: '1.4rem' }}>
-              {error}
-            </div>
-          )}
           <div className="form__group">
             <label className="form__label" htmlFor="name">Your name</label>
             <input

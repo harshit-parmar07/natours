@@ -2,19 +2,19 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import { AlertContext } from '../context/AlertContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const { showAlert } = useContext(AlertContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const res = await api.post('/users/login', {
@@ -24,11 +24,12 @@ const Login = () => {
 
       // Update global auth state
       login(res.data.data.user);
-      
+      showAlert('success', 'Logged in successfully!');
+
       // Redirect to home
-      navigate('/');
+      setTimeout(() => navigate('/'), 500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error logging in');
+      showAlert('error', err.response?.data?.message || 'Error logging in');
     } finally {
       setLoading(false);
     }
@@ -39,7 +40,6 @@ const Login = () => {
       <div className="login-form">
         <h2 className="heading-secondary ma-bt-lg">Log into your account</h2>
         <form className="form form--login" onSubmit={handleSubmit}>
-          {error && <div className="error__msg" style={{color: '#ff7730', marginBottom: '1rem', textAlign: 'center', fontSize: '1.4rem'}}>{error}</div>}
           <div className="form__group">
             <label className="form__label" htmlFor="email">Email address</label>
             <input
