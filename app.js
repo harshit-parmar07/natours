@@ -25,16 +25,19 @@ const app = express();
 app.set('trust proxy', 1);
 
 // 1)GLOBAL MIDDLEWARES
-app.use(cors());
-app.options('*', cors());
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://natours-react-v1.vercel.app'
+  ],
+  credentials: true
+};
 
-// for development testing
-// app.use(
-//   cors({
-//     origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
-//     credentials: true
-//   })
-// );
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // serving static files
 app.use(express.static(path.join(__dirname, 'public')));
