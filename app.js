@@ -36,6 +36,10 @@ const corsOptions = {
   credentials: true
 };
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
