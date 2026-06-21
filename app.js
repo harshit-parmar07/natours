@@ -28,6 +28,10 @@ app.set('trust proxy', 1);
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // 1)GLOBAL MIDDLEWARES
 app.use(cors());
 app.options('*', cors());
